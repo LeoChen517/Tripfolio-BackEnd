@@ -4,6 +4,7 @@ const { posts } = require('../models/postsSchema');
 const { users } = require('../models/usersSchema');
 const { eq, and, desc } = require('drizzle-orm');
 const { schedules } = require('../models/scheduleSchema');
+const { notifyBookmarked } = require('./notificationCtrl');
 const HTTP = require('../constants/httpStatus');
 
 // 新增收藏
@@ -39,6 +40,25 @@ const addFavorite = async (req, res) => {
         createdAt: new Date(),
       })
       .returning();
+
+    // 取得貼文擁有者 userId
+    const [post] = await db
+      .select({ memberId: posts.memberId })
+      .from(posts)
+      .where(eq(posts.id, postId))
+      .limit(1);
+
+    // 取得收藏者名稱
+    const [user] = await db
+      .select({ name: users.name })
+      .from(users)
+      .where(eq(users.id, memberId))
+      .limit(1);
+
+    // 發送通知（排除自己收藏自己不通知）
+    if (post && post.memberId && post.memberId !== memberId && user && user.name) {
+      await notifyBookmarked(post.memberId, user.name);
+    }
 
     return res.status(HTTP.CREATED).json({
       message: '收藏成功',

@@ -14,9 +14,7 @@ const swaggerDocument = YAML.load('./swagger.yaml');
 const allowedOrigins = [
   process.env.VITE_API_URL,
   'http://localhost:5173',
-  'https://maytripfoliodev.netlify.app',
-  'https://portfolioo-devv.netlify.app',
-  'https://tripfolioo.netlify.app',
+  'https://tripfolio-frontend.vercel.app',
   process.env.LINEPAY_RETURN_HOST,
   'https://baseline-distribute-bouquet-makeup.trycloudflare.com',
 ];

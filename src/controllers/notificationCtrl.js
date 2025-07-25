@@ -58,12 +58,12 @@ async function notifyLoginfail(userId) {
   }
 }
 
-async function notifyCommented(userId, commentContent) {
+async function notifyCommented(userId, commentContent, commenterName) {
   try {
     if (!(await isPreferenceEnabled(userId, 'onComment'))) return;
     const email = await getUserEmail(userId);
     if (!email) return;
-    await sendEmail(email, '您的貼文有新留言', `<p>留言內容：${commentContent}</p>`);
+    await sendEmail(email, '您的貼文有新留言', `<p>${commenterName}留言：${commentContent}</p>`);
   } catch (err) {
     // 郵件發送失敗，請稍後再試。
   }

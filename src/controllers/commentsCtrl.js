@@ -1,7 +1,9 @@
 const { db } = require('../config/db');
 const { comments } = require('../models/commentsSchema');
 const { users } = require('../models/usersSchema');
+const { posts } = require('../models/postsSchema');
 const { eq, desc } = require('drizzle-orm');
+const { notifyCommented } = require('./notificationCtrl');
 const HTTP = require('../constants/httpStatus');
 
 const getCommentsByPost = async (req, res) => {
@@ -69,9 +71,27 @@ const addComment = async (req, res) => {
       .leftJoin(users, eq(comments.memberId, users.id))
       .where(eq(comments.id, newComment.id));
 
+    // 取得貼文擁有者 userId
+    const [post] = await db
+      .select({ memberId: posts.memberId })
+      .from(posts)
+      .where(eq(posts.id, parsedPostId))
+      .limit(1);
+
+    // 取得留言者名稱
+    const [user] = await db
+      .select({ name: users.name })
+      .from(users)
+      .where(eq(users.id, memberId))
+      .limit(1);
+
+    // 發送通知（排除自己留言自己不通知）
+    if (post && post.memberId && post.memberId !== memberId) {
+      await notifyCommented(post.memberId, content.trim(), user ? user.name : '匿名');
+    }
+
     return res.status(HTTP.CREATED).json(commentWithUser);
   } catch (error) {
-
     return res.status(HTTP.INTERNAL_SERVER_ERROR).json({ error: '新增留言失敗' });
   }
 };
@@ -101,7 +121,6 @@ const deleteComment = async (req, res) => {
     await db.delete(comments).where(eq(comments.id, parseInt(commentId, 10)));
     return res.json({ message: '留言已刪除' });
   } catch (error) {
-
     return res.status(HTTP.INTERNAL_SERVER_ERROR).json({ error: '刪除留言失敗' });
   }
 };
