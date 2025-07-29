@@ -9,7 +9,7 @@ const googleAuth = passport.authenticate('google', {
 
 const googleAuthCallback = (req, res, next) => {
   passport.authenticate('google', { session: false }, async (err, user, info) => {
-    const FRONTEND_BASE_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
+    const FRONTEND_BASE_URL = process.env.VITE_API_URL || 'http://localhost:5173';
 
     if (err) {
       return res.redirect(
