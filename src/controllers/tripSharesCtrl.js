@@ -297,6 +297,31 @@ const getTripPermission = async (req, res) => {
   }
 };
 
+const leaveShareTrip = async (req, res) => {
+  const userId = req.user.id; // 目前登入者
+  const { tripId } = req.params;
+
+  try {
+    // 檢查該使用者是否在共享清單
+    const exist = await db
+      .select()
+      .from(sharedUsers)
+      .where(eq(sharedUsers.tripId, parseInt(tripId)), eq(sharedUsers.userId, userId));
+
+    if (!exist.length) {
+      return res.status(403).json({ success: false, message: '你不是共享成員' });
+    }
+
+    await db
+      .delete(sharedUsers)
+      .where(eq(sharedUsers.tripId, parseInt(tripId)), eq(sharedUsers.userId, userId));
+
+    return res.status(200).json({ success: true });
+  } catch (err) {
+    return res.status(500).json({ success: false });
+  }
+};
+
 module.exports = {
   createShareLink,
   getSharedUsers,
@@ -305,4 +330,5 @@ module.exports = {
   handleShareToken,
   getMyTripsAndShared,
   getTripPermission,
+  leaveShareTrip,
 };

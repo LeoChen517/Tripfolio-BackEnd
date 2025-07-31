@@ -8,6 +8,7 @@ const {
   handleShareToken,
   getMyTripsAndShared,
   getTripPermission,
+  leaveShareTrip,
 } = require('../controllers/tripSharesCtrl');
 const { authenticateToken } = require('../middlewares/authMiddleware'); // JWT 驗證
 
@@ -19,5 +20,6 @@ router.delete('/remove/:userId/:tripId', authenticateToken, removeSharedUser);
 router.get('/check/:token', authenticateToken, handleShareToken);
 router.get('/allTrips', authenticateToken, getMyTripsAndShared);
 router.get('/getPermission/:id', authenticateToken, getTripPermission);
+router.delete('/leave/:tripId', authenticateToken, leaveShareTrip);
 
 module.exports = router;
