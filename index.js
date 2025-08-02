@@ -60,6 +60,7 @@ const favoritesRoute = require('./src/routes/favoritesRoute');
 const paymentRoute = require('./src/routes/paymentRoutes');
 const linePayRoutes = require('./src/routes/linePayRoutes');
 const trafficRoutes = require('./src/routes/trafficData');
+const pingRoute = require('./src/routes/pingRoute');
 
 app.use('/api/signup', authRoutes);
 app.use('/api/login', loginRouter);
@@ -79,6 +80,7 @@ app.use('/api/favorites', favoritesRoute);
 app.use('/api/payment', paymentRoute);
 app.use('/api/linepay', linePayRoutes);
 app.use('/api/traffic', trafficRoutes);
+app.use('/api', pingRoute);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Backend is alive 🚀' });
