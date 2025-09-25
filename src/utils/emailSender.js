@@ -10,6 +10,14 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+transporter.verify((error, success) => {
+  if (error) {
+    console.log('Gmail 連線失敗:', error);
+  } else {
+    console.log('Gmail 連線成功');
+  }
+});
+
 /**
  * 寄送 email
  * @param {string} to - 收件者 email
@@ -26,6 +34,7 @@ async function sendEmail(to, subject, html) {
       html,
     });
   } catch (error) {
+    console.log('Email sending failed:', error);
     return { success: false, message: '郵件發送失敗', error };
   }
   return null;
